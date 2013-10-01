@@ -10,11 +10,11 @@ module ObfuscateId
   end
 
   def self.hide(id, spin)
-    ScatterSwap.hash(id, spin)
+    ScatterSwap.hash(id, spin).to_i.to_s(32)
   end
 
   def self.show(id, spin)
-    ScatterSwap.reverse_hash(id, spin)
+    ScatterSwap.reverse_hash(id.to_i(32), spin)
   end
 
 
