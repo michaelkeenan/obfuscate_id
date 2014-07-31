@@ -61,8 +61,11 @@ module ObfuscateId
     # As ActiveRecord::Persistence#reload uses self.id
     # reload without deobfuscating
     def reload(options = nil)
-      options = (options || {}).merge(:no_obfuscated_id => true)
-      super(options)
+      actual_id = self.id
+      self.id = to_param
+      super(options).tap do
+        self.id = actual_id
+      end
     end
 
     def deobfuscate_id(obfuscated_id)
