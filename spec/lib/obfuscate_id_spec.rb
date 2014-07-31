@@ -45,7 +45,34 @@ describe "#obfuscate_id_spin" do
       p = Post.new(id: 1)
       expect(u.to_param).to_not eql p.to_param
     end
+
+    describe "for model with long name" do
+      before do
+        class SomeReallyAbsurdlyLongNamedClassThatYouWouldntHaveThoughtOf < ActiveRecord::Base
+          obfuscate_id
+        end
+      end
+        it 'compute default spin correctly' do
+          rec = SomeReallyAbsurdlyLongNamedClassThatYouWouldntHaveThoughtOf.new(id: 1)
+          expect(rec.to_param).to_not raise_error(/bignum too big/)
+        end
+    end
+
+  end
+end
+
+describe "#deobfuscate_id" do
+  before do
+    class User < ActiveRecord::Base
+      obfuscate_id
+    end
   end
 
+  let (:user) { User.create(id: 1) }
+
+  subject {User.deobfuscate_id(user.to_param).to_i}
+  it "should reverse the obfuscated id" do
+    should eq(user.id)
+  end
 end
 
